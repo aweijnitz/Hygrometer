@@ -9,6 +9,7 @@
 
 #define  PERIOD_US 1000  // for 1kHz, or use 10000 for 100Hz
 #define  HALF_PERIOD_US (PERIOD_US/2)
+#define  BAUD_RATE 115200
 
 #define  DEBUG  true  // Send debug info over serial.
 
@@ -34,7 +35,7 @@ float prevVoltage = 0.0f; // Used for keping a moving average of humidity sensor
 int printMe = 0;          // just a counter to trottle logging of values 
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(BAUD_RATE);
   pinMode (DRIVE1, OUTPUT);
   pinMode (DRIVE2, OUTPUT);
   prev_time = micros ();
@@ -88,15 +89,6 @@ float voltToHumidity(float humidityVolt, float temp) {
   float rHLow = 20.0f + rIndex*10; // Table starts at rH 20%
   if(rIndex > 0 && rIndex < 8) {
     relativeHumidity = rHLow + 10*((r-lookupTable[tIndex][rIndex])/(lookupTable[tIndex][rIndex-1] - lookupTable[tIndex][rIndex]));
-    
-    // Read from row next temp over in table to adjust reading
-/*    float rTemp = 0.0;
-    if(rIndex < 7 && (temp - ()) < 3)
-      rTemp = rHLow + 10*((r-lookupTable[tIndex][rIndex])/(lookupTable[tIndex][rIndex-1] - lookupTable[tIndex][rIndex]));    
- 
-    if(rTemp > 0) { // Do extra interpolation to adjust for temp reading bewteen values (ex. 23.7 is between 20 and 25C rows)
-    }
- */
   }
   else // TODO: Edge case, I believe there is a bug here. Need to check.
     relativeHumidity = rHLow + 10*((r-lookupTable[tIndex][rIndex])/(lookupTable[tIndex][rIndex]));
