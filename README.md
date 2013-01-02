@@ -4,7 +4,7 @@ Basic Arduino sketch to measure relative humidity and temperature using an EFS-1
 
 ## Installing/building
 - Build the cicuit below
-- Checkout this project
+- Clone or download this project
 - Build and upload to your circuit
 - Monitor the serial port for values
 
@@ -21,6 +21,8 @@ See the application notes in the LM135 datasheet for more info on calibration of
 ## The circuit
 [![CircuitLab Schematic 6h6z7z](https://www.circuitlab.com/circuit/6h6z7z/screenshot/540x405/)](https://www.circuitlab.com/circuit/6h6z7z/arduino-hygrometer/)
 
+**On the breadboard**
+![Breadboard](http://wohnung.se/arduino/EFS-10-hygrometer.jpg)
 
 
 
