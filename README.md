@@ -2,6 +2,11 @@
 
 Basic Arduino sketch to measure relative humidity and temperature using an EFS-10 and an LM135.
 
+Sample results can be found here. [Example logdata as interactive graph](http://wohnung.se/arduino/hygrometer/data.html) 
+
+The data set has been post processed with sub sampling to reduce the amount of data to load.
+
+
 ## Installing/building
 - Build the cicuit below
 - Clone or download this project
