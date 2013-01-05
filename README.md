@@ -1,6 +1,6 @@
 # Hygrometer
 
-Basic Arduino sketch to measure relative humidity and temperature using an EFS-10 and an LM135.
+Basic Arduino sketch to measure relative humidity and temperature using an EFS-10 and an LM335.
 
 Sample results can be found here. [Example logdata as interactive graph](http://wohnung.se/arduino/hygrometer/data.html) 
 
@@ -20,7 +20,7 @@ See [LogSerial](https://github.com/aweijnitz/LogSerial) :-)
 ## Notes
 This currently uses an uncalibrated temperature senor setup, but it is very easy to add one. Basically you just have to add a 10K potentionmeter to the third pin of the sensor. I got decent readings without calibration and just added in some "software calibration" to compensate on the fly. 
 
-See the application notes in the LM135 datasheet for more info on calibration of the sensor (figure 5, Calibrated Sensor). [LM135 datasheet](http://www.ti.com/lit/ds/symlink/lm335.pdf) 
+See the application notes in the LM335 datasheet for more info on calibration of the sensor (figure 5, Calibrated Sensor). [LM135 datasheet](http://www.ti.com/lit/ds/symlink/lm335.pdf) 
 
 
 ## The circuit
