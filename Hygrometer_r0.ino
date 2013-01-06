@@ -5,7 +5,7 @@
 
 #define  V_DIVIDER 100000       // Using a 100k Ohm resistor as voltage divider
 #define  TEMP_CALIBRATION -1.1f  // Factor to adjust the temperature sensor reading ("software calibration")
-#define  LOG_INTERVAL  8192   // Throttles logging to terminal. 8192
+#define  LOG_INTERVAL  8192   // Throttles logging to terminal.
 #define  STEP_SIZE_TEMP 5.0f     // Temperature step size in lookup table
 #define  STEP_SIZE_HUM 10.0f     // Humidity step size in lookup table
 
@@ -62,7 +62,7 @@ void loop() {
 
 
 /*
-  Work out impedance and finally realtive humidity, based on:
+  Work out impedance and finally relative humidity, based on:
   - Current humidity sensor voltage reading
   - Current temp
   - Lookup table from data sheet stored in lookupTable[][]
@@ -76,7 +76,7 @@ float voltToHumidity(float humidityVolt, float temp) {
   // The final result will end up in this variable.
   float relativeHumidity = 0.0f;
 
-  // Calculate the impedance
+  // First: Calculate the impedance.
   // impedance = U_measured/(current through R2). See circuit
   float imp = humidityVolt/((5.0 - humidityVolt)/V_DIVIDER); 
 
@@ -94,53 +94,27 @@ float voltToHumidity(float humidityVolt, float temp) {
   //
   byte hIndexL = NR_COLS-1;
   byte hIndexH = 0;
-  
-  /*
-  DEBUG: humidityVolt: 1.19 temp: 22.62 impedance 31183.95 
-  tIndexL: 1 tIndexH: 2 
-  hIndexL: 5 hIndexH: 4 
-  rH_impLow_tL: 70.00 rH_impLow_tH: 60.00 rH_impHigh_tL: 70.00 rH_impHigh_tH: 60.00 
-  tF: 0.52 hFL: 3.60 hFH: -1.18 
-  rH0: 106.00 rH1: 48.18
 
-106.00,22.62
-
-  */
-  
+  // Match calculated impedance to values in the lookup table
   while (lookupTable[tIndexL][hIndexL] < imp && hIndexL-- > 0);   
-  /*
-  if(hIndexL < NR_COLS-1) // The while loop will overshoot with one, so adjust index 
-    hIndexL++;
-    */
   while (lookupTable[tIndexH][hIndexH] > imp && hIndexH++ < NR_COLS);  
- /* 
-  if(hIndexH > 0)  
-    hIndexH--;
-  */
+
+  // Calculate the humidity values at the corners of our "bounding box" in the lookup table.
+  // This is the base for the 2d interpolation.
   float tLow = (float)(tIndexL+3) * STEP_SIZE_TEMP; 
   float tHigh = (float)(tIndexH+3) * STEP_SIZE_TEMP;
-  float rH_impLow_tL = 20.0f + hIndexL * STEP_SIZE_HUM; // a Table starts at rH 20%
-  float rH_impLow_tH = 20.0f + hIndexH * STEP_SIZE_HUM; // b 
-  float rH_impHigh_tL = 20.0f + hIndexL * STEP_SIZE_HUM; //c Table starts at rH 20%
-  float rH_impHigh_tH = 20.0f + hIndexH * STEP_SIZE_HUM; //d
+  float rH_impLow_tL = 20.0f + hIndexL * STEP_SIZE_HUM; // Table starts at rH 20%
+  float rH_impLow_tH = 20.0f + hIndexH * STEP_SIZE_HUM;  
+  float rH_impHigh_tL = 20.0f + hIndexL * STEP_SIZE_HUM; 
+  float rH_impHigh_tH = 20.0f + hIndexH * STEP_SIZE_HUM;
   
- /*
-   Do interpolation in 2d to estimate relative humidity at (temp, imp) given the values in the table
-  
-    EXAMPLE: 
-    humidityVolt: 1.25 temp: 22.62 impedance 33480.89 
-    tIndexL: 1 tIndexH: 2 hIndexL: 4 hIndexH: 4 
-    rH_impLow_tL: 60.00 rH_impLow_tH: 60.00 rH_impHigh_tL: 60.00 rH_impHigh_tH: 60.00 
-    tF: 0.52 hFL: -0.12 hFH: -0.20 rH0: 58.84 rH1: 58.02
-  
-    relative humidity: 58.84%
-  */
+  // Do interpolation along humidity and temperature axis to estimate relative humidity at (temp, imp) given the values in the table
   float rH0, rH1, tF, hFL, hFH;
   if(hIndexL > 0 && hIndexH < NR_COLS && tIndexH < NR_ROWS-2) {
     tF = (temp - tLow)/STEP_SIZE_TEMP; // Temperature interpolation factor
     
     // Humidity sensor impedance steps are not equidistant for different temperatures, so we have to calculate
-    // two interpolation factors for high and low value.
+    // two interpolation factors for high and low value of relative humidity.
     hFL = (imp - lookupTable[tIndexL][hIndexL])/(lookupTable[tIndexL][hIndexL-1] - lookupTable[tIndexL][hIndexL]);
     hFH = (imp - lookupTable[tIndexL][hIndexH])/(lookupTable[tIndexH][hIndexH-1] - lookupTable[tIndexH][hIndexH]);
     
@@ -248,22 +222,6 @@ void outputResult(float realtiveHumidity, float temp) {
   Serial.print(realtiveHumidity);
   Serial.print(",");
   Serial.println(temp);
-}
-
-
-/*
-  Round float to nearest integer. Return as float.
-*/
-float rint(float f) {
-  float result = 0;
-  float fraction = f - ((byte) f);
-  
-  if(fraction < 0.5)
-    result = f - fraction;
-  else
-    result = f + 1 - fraction ;
-  
-  return result;
 }
 
 
