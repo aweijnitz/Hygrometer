@@ -110,7 +110,7 @@ float voltToHumidity(float humidityVolt, float temp) {
   
   // Do interpolation along humidity and temperature axis to estimate relative humidity at (temp, imp) given the values in the table
   float rH0, rH1, tF, hFL, hFH;
-  if(hIndexL > 0 && hIndexH < NR_COLS && tIndexH < NR_ROWS-2) {
+  if(hIndexL > 0 && hIndexH < NR_COLS && tIndexH < NR_ROWS) {
     tF = (temp - tLow)/STEP_SIZE_TEMP; // Temperature interpolation factor
     
     // Humidity sensor impedance steps are not equidistant for different temperatures, so we have to calculate
